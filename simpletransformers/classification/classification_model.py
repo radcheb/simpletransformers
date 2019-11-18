@@ -204,7 +204,8 @@ class ClassificationModel:
         args["warmup_steps"] = warmup_steps if args["warmup_steps"] == 0 else args["warmup_steps"]
 
         optimizer = AdamW(optimizer_grouped_parameters, lr=args["learning_rate"], eps=args["adam_epsilon"])
-        scheduler = get_linear_schedule_with_warmup(optimizer, warmup_steps=args["warmup_steps"], t_total=t_total)
+        scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=args["warmup_steps"],
+                                                    num_training_steps=t_total)
 
         if args["fp16"]:
             try:
