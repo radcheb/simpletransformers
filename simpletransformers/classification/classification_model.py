@@ -27,14 +27,15 @@ from torch.utils.data import (
     TensorDataset
 )
 
-from transformers import AdamW, WarmupLinearSchedule
+from transformers import AdamW, get_linear_schedule_with_warmup
 from transformers import (
     WEIGHTS_NAME,
     BertConfig, BertForSequenceClassification, BertTokenizer,
     XLNetConfig, XLNetForSequenceClassification, XLNetTokenizer,
     XLMConfig, XLMForSequenceClassification, XLMTokenizer,
     RobertaConfig, RobertaForSequenceClassification, RobertaTokenizer,
-    DistilBertConfig, DistilBertForSequenceClassification, DistilBertTokenizer
+    DistilBertConfig, DistilBertForSequenceClassification, DistilBertTokenizer,
+    CamembertConfig, CamembertForSequenceClassification, CamembertTokenizer
 )
 
 from simpletransformers.classification.classification_utils import (
@@ -62,6 +63,7 @@ class ClassificationModel:
             'xlm':        (XLMConfig, XLMForSequenceClassification, XLMTokenizer),
             'roberta':    (RobertaConfig, RobertaForSequenceClassification, RobertaTokenizer),
             'distilbert': (DistilBertConfig, DistilBertForSequenceClassification, DistilBertTokenizer),
+            'camembert': (CamembertConfig, CamembertForSequenceClassification, CamembertTokenizer),
         }
 
         config_class, model_class, tokenizer_class = MODEL_CLASSES[model_type]
@@ -202,7 +204,7 @@ class ClassificationModel:
         args["warmup_steps"] = warmup_steps if args["warmup_steps"] == 0 else args["warmup_steps"]
 
         optimizer = AdamW(optimizer_grouped_parameters, lr=args["learning_rate"], eps=args["adam_epsilon"])
-        scheduler = WarmupLinearSchedule(optimizer, warmup_steps=args["warmup_steps"], t_total=t_total)
+        scheduler = get_linear_schedule_with_warmup(optimizer, warmup_steps=args["warmup_steps"], t_total=t_total)
 
         if args["fp16"]:
             try:
